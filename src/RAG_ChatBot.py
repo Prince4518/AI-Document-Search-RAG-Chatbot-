@@ -1,8 +1,8 @@
-from langchain.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Pinecone
-from langchain.llms import HuggingFaceHub
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Pinecone
+from langchain_community.llms import HuggingFaceHub
 from dotenv import load_dotenv
 import os
 from pinecone import Pinecone, ServerlessSpec
@@ -18,9 +18,14 @@ from langchain_google_genai import GoogleGenerativeAI
 class ChatBot:
     load_dotenv()
     def __init__(self):
+        base = os.path.dirname(__file__)  # directory where RAG_ChatBot.py lives
+        txt_path = os.path.join(base, "materials", "torontoTravelAssistant.txt")
+
+        if not os.path.exists(txt_path):
+            raise FileNotFoundError(f"Expected data file not found: {txt_path}")
 
         # Load and split documents
-        loader = TextLoader('./materials/torontoTravelAssistant.txt')
+        loader = TextLoader(txt_path)
         documents = loader.load()
         text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=4)
         docs = text_splitter.split_documents(documents)
